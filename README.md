@@ -1,164 +1,194 @@
-🌐 Financial Dashboard
+# Interactive Financial Dashboard - Stock Analysis Platform
 
-<div align="center">
+A sophisticated web-based financial dashboard built with Bokeh for interactive stock market analysis and comparison. Features real-time data visualization, technical indicators, and synchronized dual-stock comparison with advanced charting capabilities.
 
-![Web App](https://img.shields.io/badge/Web App-Complex-blue?style=for-the-badge)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
+## 📈 Features
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Stars](https://img.shields.io/github/stars/machapraveen/financial-dashboard?style=for-the-badge)](https://github.com/machapraveen/financial-dashboard/stargazers)
-[![Issues](https://img.shields.io/github/issues/machapraveen/financial-dashboard?style=for-the-badge)](https://github.com/machapraveen/financial-dashboard/issues)
+- **Dual Stock Comparison**: Side-by-side analysis of two stocks with synchronized charts
+- **Interactive Candlestick Charts**: Professional-grade OHLC candlestick visualization
+- **Technical Indicators**: Multiple technical analysis tools including SMAs and linear regression
+- **Real-time Data**: Live stock data integration via Yahoo Finance (yfinance)
+- **Synchronized Navigation**: Linked chart navigation for comparative analysis
+- **Date Range Selection**: Flexible date picker for historical data analysis
+- **Responsive Web Interface**: Built with Bokeh server for dynamic interactions
 
-</div>
+## 🛠 Tech Stack
 
-## 🎯 Overview
+- **Visualization**: Bokeh (Interactive web plotting library)
+- **Data Source**: yfinance (Yahoo Finance API wrapper)
+- **Data Processing**: NumPy for numerical computations
+- **Web Framework**: Bokeh Server for real-time web applications
+- **Mathematical Analysis**: NumPy polynomial fitting for regression analysis
 
-Interactive financial dashboard for stock analysis with technical indicators
+## 📦 Installation
 
-This complex Web App project demonstrates advanced techniques and modern development practices, featuring cutting-edge implementations and professional-grade architecture.
-
-## ✨ Key Features
-
-- 🔥 **Stock price visualization**
-- 🔥 **Technical indicators**
-- 🔥 **Interactive charts**
-- 🔥 **Multiple stock comparison**
-- 🔥 **Real-time data**
-
-## 🛠️ Technology Stack
-
-- **Python**
-- **Bokeh**
-- **yfinance**
-- **Pandas**
-
-## 🚀 Quick Start
-
-### 1️⃣ Clone the Repository
+1. Clone the repository:
 ```bash
-git clone https://github.com/machapraveen/financial-dashboard.git
-cd financial-dashboard
+git clone https://github.com/machapraveen/Financial-Dashboard.git
+cd "Financial Dashboard"
 ```
 
-### 2️⃣ Install Dependencies
+2. Install required dependencies:
 ```bash
-# For Python projects
-pip install -r requirements.txt
-
-# For React projects (if applicable)
-npm install
-
-# For Docker projects (if applicable)
-docker-compose up
+pip install bokeh yfinance numpy
 ```
 
-### 3️⃣ Run the Application
+## 🚀 Usage
+
+1. Start the Bokeh server:
 ```bash
-# Python applications
-python main.py  # or app.py
-
-# Jupyter notebooks
-jupyter notebook
-
-# Django projects
-python manage.py runserver
-
-# React applications
-npm start
+bokeh serve main.py --show
 ```
 
-## 📖 Usage
+2. Open your browser to `http://localhost:5006/main`
 
-This project offers comprehensive functionality for interactive financial dashboard for stock analysis with technical indicators. Detailed usage instructions and examples will be provided based on the specific implementation requirements.
+3. Use the interface to:
+   - Enter two stock symbols for comparison
+   - Select date range using date pickers
+   - Choose technical indicators to display
+   - Click "Load Data" to generate interactive charts
 
-### Basic Usage Example
+## 📊 Technical Indicators
+
+### Simple Moving Averages (SMA)
+- **30-Day SMA**: Short-term trend analysis
+- **100-Day SMA**: Medium-term trend identification
+
+### Linear Regression Line
+- Trend direction and strength analysis
+- Statistical trend fitting using NumPy polynomial regression
+
+## 🎯 Core Functions
+
+### Data Loading
 ```python
-# Example code snippet will be added based on the project structure
-# This demonstrates how to use the main functionality
+def load_data(ticker1, ticker2, start, end):
+    df1 = yf.download(ticker1, start, end)
+    df2 = yf.download(ticker2, start, end)
+    return df1, df2
 ```
 
-## 🏗️ Project Structure
-
-```
-financial-dashboard/
-├── README.md
-├── requirements.txt (if Python)
-├── src/                    # Source code
-├── tests/                  # Unit tests
-├── docs/                   # Documentation
-└── examples/               # Usage examples
-```
-
-## 🧪 Testing
-
-Run the test suite to ensure everything works correctly:
-
-```bash
-# Python projects
-python -m pytest tests/
-
-# Node.js projects
-npm test
-
-# Django projects
-python manage.py test
+### Chart Generation
+```python
+def update_plot(data, indicators, sync_axis=None):
+    df = data
+    gain = df.Close > df.Open
+    loss = df.Open > df.Close
+    
+    # Create candlestick chart
+    p = figure(x_axis_type="datetime", tools="pan,wheel_zoom,box_zoom,reset,save")
+    p.segment(df.index, df.High, df.index, df.Low, color="black")
+    p.vbar(df.index[gain], width, df.Open[gain], df.Close[gain], fill_color="#00ff00")
+    p.vbar(df.index[loss], width, df.Open[loss], df.Close[loss], fill_color="#ff0000")
+    
+    return p
 ```
 
-## 📊 Performance
+### Technical Indicator Implementation
+```python
+# 30-Day Simple Moving Average
+if indicator == "30 Day SMA":
+    df['SMA30'] = df['Close'].rolling(30).mean()
+    p.line(df.index, df.SMA30, color="purple", legend_label="30 Day SMA")
 
-This project has been optimized for performance with:
-- Efficient algorithms and data structures
-- Memory optimization techniques
-- Scalable architecture design
-- Comprehensive error handling
+# Linear Regression Analysis
+elif indicator == "Linear Regression Line":
+    par = np.polyfit(range(len(df.index.values)), df.Close.values, 1, full=True)
+    slope, intercept = par[0][0], par[0][1]
+    y_predicted = [slope * i + intercept for i in range(len(df.index.values))]
+    p.segment(df.index[0], y_predicted[0], df.index[-1], y_predicted[-1], 
+              legend_label="Linear Regression", color="red")
+```
 
-## 🔮 Roadmap
+## 🎨 Interactive Features
 
-- [ ] Enhanced performance optimizations
-- [ ] Additional feature implementations
-- [ ] Mobile/responsive design improvements
-- [ ] Advanced analytics and monitoring
-- [ ] API documentation and examples
-- [ ] Integration with cloud services
+### Chart Synchronization
+- X-axis synchronization between comparison charts
+- Unified zoom and pan controls
+- Coordinated time series navigation
 
-## 🤝 Contributing
+### Dynamic Controls
+```python
+# Interactive widgets
+stock1_text = TextInput(title="Main Stock")
+stock2_text = TextInput(title="Comparison Stock")
+date_picker_from = DatePicker(title='Start Date', value="2020-01-01")
+date_picker_to = DatePicker(title='End Date', value="2020-02-01")
+indicator_choice = MultiChoice(options=["100 Day SMA", "30 Day SMA", "Linear Regression Line"])
+```
 
-Contributions are always welcome! Here's how you can help:
+### Real-time Updates
+```python
+def on_button_click(main_stock, comparison_stock, start, end, indicators):
+    source1, source2 = load_data(main_stock, comparison_stock, start, end)
+    p = update_plot(source1, indicators)
+    p2 = update_plot(source2, indicators, sync_axis=p.x_range)
+    curdoc().clear()
+    curdoc().add_root(layout)
+    curdoc().add_root(row(p, p2))
+```
 
-1. **Fork the Project**
-2. **Create your Feature Branch** (`git checkout -b feature/AmazingFeature`)
-3. **Commit your Changes** (`git commit -m 'Add some AmazingFeature'`)
-4. **Push to the Branch** (`git push origin feature/AmazingFeature`)
-5. **Open a Pull Request**
+## 📋 User Interface
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+### Input Controls
+- **Main Stock**: Primary stock symbol input
+- **Comparison Stock**: Secondary stock for comparison
+- **Start Date**: Historical data start point
+- **End Date**: Historical data end point
+- **Indicators**: Multi-select technical indicator options
 
-## 📜 License
+### Chart Features
+- **Candlestick Visualization**: Green/red candles for price action
+- **High/Low Wicks**: Complete OHLC representation
+- **Interactive Tools**: Pan, zoom, box zoom, reset, save
+- **Legend Controls**: Click to hide/show indicators
+- **Responsive Layout**: Automatic chart resizing
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 🔧 Chart Configuration
 
-## 🌟 Acknowledgments
+### Styling Options
+```python
+p.xaxis.major_label_orientation = math.pi / 4  # 45-degree angle
+p.grid.grid_line_alpha = 0.3                   # Subtle grid lines
+p.legend.location = "top_left"                 # Legend positioning
+p.legend.click_policy = "hide"                 # Interactive legend
+```
 
-- Thanks to the open-source community for inspiration and resources
-- Built with passion for advancing technology and innovation
-- Special thanks to all contributors and supporters
+### Color Schemes
+- **Bullish Candles**: Green (#00ff00)
+- **Bearish Candles**: Red (#ff0000)
+- **30-Day SMA**: Purple
+- **100-Day SMA**: Blue
+- **Linear Regression**: Red
 
-## 📞 Contact & Support
+## 📈 Example Analysis Workflows
 
-**Praveen Kumar Macha**
-- 🐙 GitHub: [@machapraveen](https://github.com/machapraveen)
-- 📧 Email: machapraveen@example.com
-- 🔗 Project Link: [https://github.com/machapraveen/financial-dashboard](https://github.com/machapraveen/financial-dashboard)
+### Trend Analysis
+1. Load two similar stocks (e.g., AAPL vs MSFT)
+2. Enable 30-day and 100-day SMAs
+3. Add linear regression line
+4. Compare trend directions and crossovers
 
-For support, email machapraveen@example.com or open an issue on GitHub.
+### Volatility Comparison
+1. Select stocks from different sectors
+2. Use synchronized charts for direct comparison
+3. Analyze candlestick patterns
+4. Compare high-low ranges
 
----
+## 🔮 Future Enhancements
 
-<div align="center">
+- Additional technical indicators (RSI, MACD, Bollinger Bands)
+- Volume analysis charts
+- Multiple timeframe analysis
+- Stock screening capabilities
+- Portfolio tracking features
+- Export functionality for charts and data
 
-**⭐ If you found this project helpful, please give it a star! ⭐**
+## 👨‍💻 Author
 
-Made with ❤️ by [Praveen Kumar Macha](https://github.com/machapraveen)
+**Macha Praveen**
+- GitHub: [@machapraveen](https://github.com/machapraveen)
 
-</div>
+## 📄 License
+
+This project is open source and available under the MIT License.
